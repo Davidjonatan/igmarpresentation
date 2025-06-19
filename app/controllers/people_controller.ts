@@ -33,7 +33,7 @@ export default class PeopleController {
     } catch (error) {
       return response.status(400).json({
         message: 'Error al crear persona',
-        errors: error.messages 
+        error: error.message
       })
     }
   }

@@ -14,7 +14,7 @@ export const createPersonValidator = vine.compile(
         return !person
       }),
     phone: vine.string().trim().maxLength(20).optional()
-  })
+  }),
 )
 
 // Validador para actualizar persona
