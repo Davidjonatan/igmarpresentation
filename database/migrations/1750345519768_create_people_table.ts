@@ -12,9 +12,9 @@ export default class extends BaseSchema {
       table.string('email', 254).notNullable().unique()
       table.string('phone', 20).nullable()
       
-      // SOLUCIÓN: Usar datetime
-      table.dateTime('created_at').notNullable()
-      table.dateTime('updated_at').notNullable()
+      // Solución para timestamp en MySQL
+      table.timestamp('created_at').notNullable().defaultTo(this.now())
+      table.timestamp('updated_at').notNullable().defaultTo(this.now())
     })
   }
 
