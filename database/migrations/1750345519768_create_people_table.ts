@@ -1,4 +1,3 @@
-// database/migrations/..._persons.ts
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
@@ -12,6 +11,7 @@ export default class extends BaseSchema {
       table.integer('age').unsigned()
       table.string('email', 254).notNullable().unique()
       table.string('phone', 20).nullable()
+      
       // Solución para timestamp en MySQL
       table.timestamp('created_at').notNullable().defaultTo(this.now())
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
