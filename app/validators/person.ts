@@ -6,7 +6,13 @@ export const createPersonValidator = vine.compile(
     name: vine.string().trim().minLength(2).maxLength(100),
     lastname: vine.string().trim().minLength(2).maxLength(100),
     age: vine.number().min(1).max(120),
-    email: vine.string().email(),
+   email: vine
+  .string()
+  .email()
+  .unique(async (db, value) => {
+    const person = await db.from('people').where('email', value).first()
+    return !person
+  }),
     phone: vine.string().trim().maxLength(20).optional()
   })
 )
@@ -17,7 +23,18 @@ export const updatePersonValidator = vine.compile(
     name: vine.string().trim().minLength(2).maxLength(100).optional(),
     lastname: vine.string().trim().minLength(2).maxLength(100).optional(),
     age: vine.number().min(1).max(120).optional(),
-    email: vine.string().email().optional(),
+    email: vine
+  .string()
+  .email()
+  .unique(async (db, value, field) => {
+    const person = await db
+      .from('people')
+      .where('email', value)
+      .whereNot('id', field.meta.id)    
+      .first()
+    return !person
+  })
+  .optional(),
     phone: vine.string().trim().maxLength(20).optional()
   })
 )

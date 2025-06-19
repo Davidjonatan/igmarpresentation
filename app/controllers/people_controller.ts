@@ -26,9 +26,7 @@ export default class PeopleController {
    */
   async store({ request, response }: HttpContext) {
     try {
-      const data = request.all()
-      const payload = await createPersonValidator.validate(data)
-      
+      const payload = await request.validateUsing(createPersonValidator)
       const person = await Person.create(payload)
       return response.created(person)
     } catch (error) {
@@ -41,9 +39,7 @@ export default class PeopleController {
    */
   async show({ params, response }: HttpContext) {
     try {
-      // Validar ID primero
-      await personIdValidator.validate({ id: params.id })
-      
+      await personIdValidator.validate({ id: Number(params.id) })
       const person = await Person.findOrFail(params.id)
       return response.ok(person)
     } catch (error) {
@@ -59,16 +55,14 @@ export default class PeopleController {
    */
   async update({ params, request, response }: HttpContext) {
     try {
-      // Validar ID
-      await personIdValidator.validate({ id: params.id })
-      
-      const data = request.all()
-      const payload = await updatePersonValidator.validate(data)
-      
+      await personIdValidator.validate({ id: Number(params.id) })
+      // Pasar el id como meta para la validación única de email
+      const payload = await request.validateUsing(updatePersonValidator, {
+        meta: { id: Number(params.id) }
+      })
       const person = await Person.findOrFail(params.id)
       person.merge(payload)
       await person.save()
-      
       return response.ok(person)
     } catch (error) {
       if (error.messages) {
@@ -83,12 +77,9 @@ export default class PeopleController {
    */
   async destroy({ params, response }: HttpContext) {
     try {
-      // Validar ID
-      await personIdValidator.validate({ id: params.id })
-      
+      await personIdValidator.validate({ id: Number(params.id) })
       const person = await Person.findOrFail(params.id)
       await person.delete()
-      
       return response.ok({ message: 'Persona eliminada correctamente' })
     } catch (error) {
       if (error.messages) {
