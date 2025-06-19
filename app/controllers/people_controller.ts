@@ -24,9 +24,7 @@ export default class PeopleController {
 
   async store({ request, response }: HttpContext) {
     try {
-      const data = request.all()
-      const payload = await createPersonValidator.validate(data)
-      
+      const payload = await request.validateUsing(createPersonValidator)
       const person = await Person.create(payload)
       return response.status(201).json({
         message: 'Persona creada exitosamente',
@@ -62,7 +60,10 @@ export default class PeopleController {
       await personIdValidator.validate({ id: params.id })
       
       const data = request.all()
-      const payload = await updatePersonValidator.validate(data)
+      
+      const payload = await updatePersonValidator.validate(data, {
+        meta: { id: params.id }
+      })
       
       const person = await Person.findOrFail(params.id)
       person.merge(payload)
