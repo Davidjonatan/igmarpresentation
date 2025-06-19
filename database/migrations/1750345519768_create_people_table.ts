@@ -7,13 +7,11 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      
       table.string('name', 80).notNullable()
       table.string('lastname', 80).notNullable()
       table.integer('age').unsigned()
       table.string('email', 254).notNullable().unique()
       table.string('phone', 20).nullable()
-      
       // Solución para timestamp en MySQL
       table.timestamp('created_at').notNullable().defaultTo(this.now())
       table.timestamp('updated_at').notNullable().defaultTo(this.now())
