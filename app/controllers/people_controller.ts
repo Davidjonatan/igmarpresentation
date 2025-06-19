@@ -55,22 +55,26 @@ export default class PeopleController {
    */
   async update({ params, request, response }: HttpContext) {
     try {
-      await personIdValidator.validate({ id: Number(params.id) })
-      // Pasar el id como meta para la validación única de email
-      const payload = await request.validateUsing(updatePersonValidator, {
-        meta: { id: Number(params.id) }
+      // Validar ID primero
+      await personIdValidator.validate({ id: params.id })
+      
+      const data = request.all()
+      
+      // Pasar meta.id para la validación unique
+      const payload = await updatePersonValidator.validate(data, {
+        meta: { id: params.id }
       })
+      
       const person = await Person.findOrFail(params.id)
       person.merge(payload)
       await person.save()
+      
       return response.ok(person)
     } catch (error) {
-      if (error.messages) {
-        return response.badRequest(error.messages)
-      }
-      return response.notFound({ error: 'Persona no encontrada' })
+      // Manejo de errores
     }
   }
+
 
   /**
    * Eliminar persona (DELETE /people/:id)

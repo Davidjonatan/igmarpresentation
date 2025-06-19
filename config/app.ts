@@ -2,17 +2,6 @@ import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { Secret } from '@adonisjs/core/helpers'
 import { defineConfig } from '@adonisjs/core/http'
-import vine from '@vinejs/vine'
-import { createRequire } from 'module'
-
-const require = createRequire(import.meta.url)
-const messages = require('../resources/validation/messages/vine_messages')
-
-vine.messagesProvider = {
-  getMessage() {
-    return messages
-  }
-}
 
 /**
  * The app key is used for encrypting cookies, generating signed URLs,

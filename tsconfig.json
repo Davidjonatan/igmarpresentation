@@ -2,9 +2,5 @@
   "extends": "@adonisjs/tsconfig/tsconfig.app.json",
   "compilerOptions": {
     "rootDir": "./",
-    "outDir": "./build",
-      "paths": {
-      "#validation_messages/*": ["./resources/validation/messages/*"]
-    }
   }
 }
