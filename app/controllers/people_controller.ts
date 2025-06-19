@@ -7,59 +7,58 @@ import {
 } from '#validators/person'
 
 export default class PeopleController {
-  /**
-   * Listar todas las personas (GET /people)
-   */
   async index({ response }: HttpContext) {
     try {
       const people = await Person.all()
-      return response.ok(people)
+      return response.status(200).json({
+        message: 'Personas consultadas exitosamente',
+        data: people
+      })
     } catch (error) {
-      return response.internalServerError({
-        error: 'Error al obtener las personas'
+      return response.status(400).json({
+        message: 'Error al consultar personas',
+        errors: error.message
       })
     }
   }
 
-  /**
-   * Crear nueva persona (POST /people)
-   */
   async store({ request, response }: HttpContext) {
     try {
       const data = request.all()
       const payload = await createPersonValidator.validate(data)
       
       const person = await Person.create(payload)
-      return response.created(person)
+      return response.status(201).json({
+        message: 'Persona creada exitosamente',
+        data: person
+      })
     } catch (error) {
-      return response.badRequest(error.messages)
+      return response.status(400).json({
+        message: 'Error al crear persona',
+        errors: error.messages 
+      })
     }
   }
 
-  /**
-   * Mostrar persona específica (GET /people/:id)
-   */
   async show({ params, response }: HttpContext) {
     try {
-      // Validar ID primero
       await personIdValidator.validate({ id: params.id })
       
       const person = await Person.findOrFail(params.id)
-      return response.ok(person)
+      return response.status(200).json({
+        message: 'Persona consultada exitosamente',
+        data: person
+      })
     } catch (error) {
-      if (error.messages) {
-        return response.badRequest(error.messages)
-      }
-      return response.notFound({ error: 'Persona no encontrada' })
+      return response.status(400).json({
+        message: 'Error consultando a la persona',
+        errors: error.messages
+      })
     }
   }
 
-  /**
-   * Actualizar persona (PUT/PATCH /people/:id)
-   */
   async update({ params, request, response }: HttpContext) {
     try {
-      // Validar ID
       await personIdValidator.validate({ id: params.id })
       
       const data = request.all()
@@ -69,32 +68,35 @@ export default class PeopleController {
       person.merge(payload)
       await person.save()
       
-      return response.ok(person)
+      return response.status(200).json({
+        message: 'Persona modificada con exito',
+        data: person
+      })
     } catch (error) {
-      if (error.messages) {
-        return response.badRequest(error.messages)
-      }
-      return response.notFound({ error: 'Persona no encontrada' })
+      return response.status(400).json({ 
+        message: 'Error al modificar persona',
+        error: error.messages  
+      })
     }
   }
 
-  /**
-   * Eliminar persona (DELETE /people/:id)
-   */
   async destroy({ params, response }: HttpContext) {
     try {
-      // Validar ID
       await personIdValidator.validate({ id: params.id })
       
       const person = await Person.findOrFail(params.id)
+      const deletedPerson = person
       await person.delete()
       
-      return response.ok({ message: 'Persona eliminada correctamente' })
+      return response.status(200).json({
+        message: 'Persona eliminada exitosamente',
+        data: deletedPerson
+      })
     } catch (error) {
-      if (error.messages) {
-        return response.badRequest(error.messages)
-      }
-      return response.notFound({ error: 'Persona no encontrada' })
+      return response.status(200).json({
+        message: 'Error al eliminar a la persona',
+        errors: error.messages
+      })
     }
   }
 }
